@@ -22,7 +22,7 @@ $products = new WP_Query(
 		<div>
 			<p class="eyebrow">WordCamp Managua 2026</p>
 			<h1>No todo lo que vende necesita <em>WooCommerce.</em></h1>
-			<p class="hero__copy">Una vitrina clara, productos editables y contacto directo pueden resolverse con WordPress, un post type y tres campos.</p>
+			<p class="hero__copy">Una vitrina clara, productos editables y contacto directo pueden resolverse con WordPress, un post type y tres campos de ACF.</p>
 			<div class="hero__actions">
 				<a class="button" href="#catalogo">Ver catálogo</a>
 				<a class="button button--ghost" href="#como-funciona">Ver cómo funciona</a>
@@ -81,7 +81,7 @@ $products = new WP_Query(
 <section class="section section--dark" id="como-funciona">
 	<div class="site-wrap">
 		<div class="section-heading">
-			<h2>Tres piezas. Ningún plugin.</h2>
+			<h2>Tres piezas. Una vitrina simple.</h2>
 			<p>Solución intencionalmente pequeña para explicar decisiones técnicas sin ocultarlas detrás de una herramienta.</p>
 		</div>
 		<div class="steps">
@@ -90,8 +90,8 @@ $products = new WP_Query(
 				<p><code>register_post_type()</code> convierte productos en contenido administrable.</p>
 			</article>
 			<article class="step">
-				<h3>Campos nativos</h3>
-				<p>Meta boxes guardan precio, descripción corta y enlace de contacto.</p>
+				<h3>Campos con ACF</h3>
+				<p>ACF gratuito muestra y guarda precio, descripción corta y enlace de contacto.</p>
 			</article>
 			<article class="step">
 				<h3>Template</h3>

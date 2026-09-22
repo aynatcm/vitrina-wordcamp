@@ -1,7 +1,7 @@
 <?php
 /**
  * Funciones del theme Vitrina WordCamp.
- * Todo vive aquí a propósito: código fácil de explicar durante la charla.
+ * Código pequeño para explicar catálogo con CPT y ACF durante la charla.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -59,78 +59,14 @@ function vitrina_wordcamp_register_product_type() {
 }
 add_action( 'init', 'vitrina_wordcamp_register_product_type' );
 
-/**
- * Tres campos nativos. Sin ACF y sin plugin de e-commerce.
- */
-function vitrina_wordcamp_add_product_meta_box() {
-	add_meta_box(
-		'vitrina_product_details',
-		'Datos del producto',
-		'vitrina_wordcamp_render_product_meta_box',
-		'producto',
-		'normal',
-		'high'
-	);
-}
-add_action( 'add_meta_boxes', 'vitrina_wordcamp_add_product_meta_box' );
-
-function vitrina_wordcamp_render_product_meta_box( $post ) {
-	wp_nonce_field( 'vitrina_save_product', 'vitrina_product_nonce' );
-
-	$price       = get_post_meta( $post->ID, '_vitrina_price', true );
-	$summary     = get_post_meta( $post->ID, '_vitrina_summary', true );
-	$contact_url = get_post_meta( $post->ID, '_vitrina_contact_url', true );
-	?>
-	<p>
-		<label for="vitrina_price"><strong>Precio</strong></label><br>
-		<input class="widefat" id="vitrina_price" name="vitrina_price" type="text" value="<?php echo esc_attr( $price ); ?>" placeholder="Ej. C$ 650">
-	</p>
-	<p>
-		<label for="vitrina_summary"><strong>Descripción corta</strong></label><br>
-		<textarea class="widefat" id="vitrina_summary" name="vitrina_summary" rows="3" placeholder="Una frase para la tarjeta del catálogo."><?php echo esc_textarea( $summary ); ?></textarea>
-	</p>
-	<p>
-		<label for="vitrina_contact_url"><strong>Enlace de contacto</strong></label><br>
-		<input class="widefat" id="vitrina_contact_url" name="vitrina_contact_url" type="url" value="<?php echo esc_attr( $contact_url ); ?>" placeholder="https://wa.me/505...">
-	</p>
-	<?php
-}
-
-function vitrina_wordcamp_save_product_meta( $post_id ) {
-	if (
-		! isset( $_POST['vitrina_product_nonce'] ) ||
-		! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['vitrina_product_nonce'] ) ), 'vitrina_save_product' ) ||
-		( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
-		! current_user_can( 'edit_post', $post_id )
-	) {
-		return;
-	}
-
-	$fields = array(
-		'vitrina_price'       => array( '_vitrina_price', 'sanitize_text_field' ),
-		'vitrina_summary'     => array( '_vitrina_summary', 'sanitize_textarea_field' ),
-		'vitrina_contact_url' => array( '_vitrina_contact_url', 'esc_url_raw' ),
-	);
-
-	foreach ( $fields as $field => $config ) {
-		if ( isset( $_POST[ $field ] ) ) {
-			$value = call_user_func( $config[1], wp_unslash( $_POST[ $field ] ) );
-			update_post_meta( $post_id, $config[0], $value );
-		}
-	}
-}
-add_action( 'save_post_producto', 'vitrina_wordcamp_save_product_meta' );
-
 function vitrina_wordcamp_product_data( $post_id ) {
+	if ( ! function_exists( 'get_field' ) ) {
+		return array( 'price' => '', 'summary' => '', 'contact_url' => '' );
+	}
+
 	return array(
-		'price'       => get_post_meta( $post_id, '_vitrina_price', true ),
-		'summary'     => get_post_meta( $post_id, '_vitrina_summary', true ),
-		'contact_url' => get_post_meta( $post_id, '_vitrina_contact_url', true ),
+		'price'       => get_field( 'precio', $post_id ),
+		'summary'     => get_field( 'resumen', $post_id ),
+		'contact_url' => get_field( 'enlace_contacto', $post_id ),
 	);
 }
-
-function vitrina_wordcamp_activate() {
-	vitrina_wordcamp_register_product_type();
-	flush_rewrite_rules();
-}
-add_action( 'after_switch_theme', 'vitrina_wordcamp_activate' );
